@@ -2,16 +2,29 @@ const express = require('express');
 const app = express();
 const helmet = require('helmet');
 
-app.use(helmet.hidePoweredBy());
-app.use(helmet.frameguard({ action: 'deny' }));
-app.use(helmet.xssFilter());
-app.use(helmet.noSniff());
-app.use(helmet.ieNoOpen());
+// all included in parent middleware helmet() down below.
+// app.use(helmet.hidePoweredBy());
+// app.use(helmet.xssFilter());
+// app.use(helmet.noSniff());
+// app.use(helmet.ieNoOpen());
+// app.use(helmet.dnsPrefetchControl());
+// app.use(helmet.frameguard({ action: 'deny' }));
 
 const ninetyDaysInSeconds = 60*60*24*90;
-app.use(helmet.hsts({ maxAge: ninetyDaysInSeconds, force: true }));
+// app.use(helmet.hsts({ maxAge: ninetyDaysInSeconds, force: true }));
 
-app.use(helmet.dnsPrefetchControl());
+
+
+app.use(helmet({
+  frameguard: {
+    action: 'deny'
+  },
+  hsts: {
+    maxAge: ninetyDaysInSeconds, 
+    force: true
+  }
+}));
+
 app.use(helmet.noCache());
 app.use(helmet.contentSecurityPolicy({
   directives: {
@@ -19,9 +32,6 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "trusted-cdn.com"],
   }
 }));
-
-
-
 
 
 
